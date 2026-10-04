@@ -61,7 +61,7 @@ function parseRequest(input: Record<string, unknown>, query: URLSearchParams) {
   return { value: { data, format, ec, size, margin, dark, light } satisfies QrRequest };
 }
 
-async function respond(request: NextRequest, raw: string, searchParams: URLSearchParams) {
+async function respond(request: NextRequest, searchParams: URLSearchParams) {
   const key = extractKey(request, searchParams);
   if (!key || !KEY_PATTERN.test(key)) {
     return NextResponse.json(
@@ -131,10 +131,10 @@ async function respond(request: NextRequest, raw: string, searchParams: URLSearc
 
 /** GET /api/qr?data=...&key=sk_live_... — convenient for <img src> usage. */
 export async function GET(request: NextRequest) {
-  return respond(request, "", request.nextUrl.searchParams);
+  return respond(request, request.nextUrl.searchParams);
 }
 
 /** POST /api/qr — JSON body: { data, format?, ec?, size?, margin?, dark?, light? } */
 export async function POST(request: NextRequest) {
-  return respond(request, "", request.nextUrl.searchParams);
+  return respond(request, request.nextUrl.searchParams);
 }
