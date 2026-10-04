@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Container } from "./container";
 import { Icon } from "@/components/ui/icon";
@@ -7,15 +10,18 @@ import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "./language-toggle";
 
 const NAV_ITEMS = [
-  { label: "Generator", href: "/", active: true },
-  { label: "Dynamic QR & Analytics", href: "#" },
-  { label: "Bulk CSV", href: "#" },
-  { label: "API & Docs", href: "#" },
-  { label: "Pricing", href: "#" },
+  { label: "Generator", href: "/" },
+  { label: "Dynamic QR & Analytics", href: "/dynamic-qr" },
+  { label: "Bulk CSV", href: "/bulk-csv" },
+  { label: "API & Docs", href: "/api-docs" },
 ];
 
 /** Fixed application header shared by every page of the studio. */
 export function SiteHeader() {
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+
   return (
     <header className="fixed top-0 left-0 right-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <Container className="h-16 flex items-center justify-between gap-2 sm:gap-4">
@@ -40,10 +46,10 @@ export function SiteHeader() {
               <a
                 key={item.label}
                 href={item.href}
-                aria-current={item.active ? "page" : undefined}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-sm transition-colors",
-                  item.active
+                  isActive(item.href)
                     ? "font-semibold bg-sky-50 text-sky-700 border border-sky-200/80 shadow-xs"
                     : "font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100",
                 )}
