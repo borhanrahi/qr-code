@@ -16,8 +16,7 @@ import {
   QrParameters,
   ResponsesAndLimits,
 } from "@/components/docs/api-reference";
-
-export const DEMO_KEY = "sk_live_demo_scancraft_2025";
+import { DEMO_KEY } from "@/lib/api-demo-key";
 
 type SampleTab = "curl" | "js" | "python";
 
