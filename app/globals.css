@@ -54,6 +54,27 @@
     color: #0c4a6e;
   }
 
+  /* Every hoverable/clickable element shows a hand cursor */
+  a[href],
+  button:not(:disabled),
+  select,
+  summary,
+  label:has(input:not([type="range"])),
+  [role="button"],
+  [role="link"],
+  [role="tab"],
+  [role="switch"],
+  [role="menuitem"],
+  [role="option"],
+  [data-cursor="pointer"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
   /* Range input styling shared by every slider in the studio */
   input[type="range"].studio-slider {
     appearance: none;
