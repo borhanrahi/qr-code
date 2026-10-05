@@ -43,7 +43,7 @@ export function SiteHeader() {
 
           <nav className="hidden xl:flex items-center gap-1.5">
             {NAV_ITEMS.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 aria-current={isActive(item.href) ? "page" : undefined}
@@ -55,7 +55,7 @@ export function SiteHeader() {
                 )}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
