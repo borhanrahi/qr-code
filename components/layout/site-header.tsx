@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { Container } from "./container";
 import { Icon } from "@/components/ui/icon";
 import { Badge, StatusDot } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "./language-toggle";
+import { CommandPalette } from "./command-palette";
 
 const NAV_ITEMS = [
   { label: "Generator", href: "/" },
@@ -68,18 +68,8 @@ export function SiteHeader() {
             <StatusDot className="bg-emerald-500" />
           </div>
 
-          <div className="hidden 2xl:flex">
-            <Button
-              variant="subtle"
-              size="md"
-              icon="search"
-              className="justify-start text-xs py-1.5"
-            >
-              <span>Quick Search</span>
-              <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-white border border-slate-200 text-slate-500 rounded font-semibold shadow-2xs ml-2">
-                ⌘K
-              </kbd>
-            </Button>
+          <div className="hidden xl:block">
+            <CommandPalette />
           </div>
 
           <LanguageToggle />

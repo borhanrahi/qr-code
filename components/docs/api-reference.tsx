@@ -303,7 +303,7 @@ export function DynamicApiSection({ origin }: { origin: string }) {
       <div className="p-5 flex flex-col gap-4">
         <p className="text-xs text-slate-600 leading-relaxed">
           Dynamic codes encode a short hop —{" "}
-          <code className="font-mono text-sky-700">{"{origin}/r/[slug]"}</code> — instead of the
+          <code className="font-mono text-sky-700">{`${origin}/r/[slug]`}</code> — instead of the
           destination itself. Every scan is logged (device class, OS, referrer host, country), then
           answered with a <strong>302</strong> to the current target, so you can retarget a printed
           QR without reprints. Slugs are 6 random hex chars.
