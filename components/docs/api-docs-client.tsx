@@ -9,6 +9,13 @@ import { Field } from "@/components/ui/field";
 import { TextInput } from "@/components/ui/text-input";
 import { Segmented } from "@/components/ui/segmented";
 import { Icon } from "@/components/ui/icon";
+import {
+  CodeBlock,
+  DynamicApiSection,
+  ErrorReference,
+  QrParameters,
+  ResponsesAndLimits,
+} from "@/components/docs/api-reference";
 
 export const DEMO_KEY = "sk_live_demo_scancraft_2025";
 
@@ -64,14 +71,6 @@ const ENDPOINTS = [
   },
 ];
 
-function CodeBlock({ code }: { code: string }) {
-  return (
-    <pre className="p-3.5 rounded-lg bg-slate-900 text-slate-100 text-xs font-mono leading-relaxed overflow-x-auto whitespace-pre">
-      {code}
-    </pre>
-  );
-}
-
 export function ApiDocsClient() {
   const origin = useOrigin();
   const displayOrigin = origin || "https://your-domain.example";
@@ -84,6 +83,19 @@ export function ApiDocsClient() {
   const [format, setFormat] = useState<"svg" | "png">("svg");
   const [ec, setEc] = useState<"L" | "M" | "Q" | "H">("M");
   const [size, setSize] = useState("512");
+  const [margin, setMargin] = useState("2");
+  const [dark, setDark] = useState("#0F172A");
+  const [light, setLight] = useState("#FFFFFF");
+
+  const payload = {
+    data,
+    format,
+    ec,
+    size: Number(size),
+    margin: Number(margin),
+    dark,
+    light,
+  };
 
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<PlayResult | null>(null);
@@ -96,17 +108,14 @@ export function ApiDocsClient() {
   }, []);
 
   const sample = (() => {
-    const payload = JSON.stringify({ data, format, ec, size: Number(size) }).replace(
-      /'/g,
-      "'\\''",
-    );
+    const body = JSON.stringify(payload, null, 2);
     if (tab === "curl") {
       return [
-        `# Generate a QR as ${format.toUpperCase()} (EC level ${ec})`,
+        `# Generate a QR as ${format.toUpperCase()} (EC level ${ec}, margin ${margin})`,
         `curl -X POST ${displayOrigin}/api/qr \\`,
         `  -H "Authorization: Bearer ${apiKey}" \\`,
         `  -H "Content-Type: application/json" \\`,
-        `  -d '${payload}'`,
+        `  -d '${JSON.stringify(payload).replace(/'/g, "'\\\\''")}'`,
         ``,
         `# Or simply: ${displayOrigin}/api/qr?data=hello&key=${apiKey}`,
       ].join("\n");
@@ -119,7 +128,7 @@ export function ApiDocsClient() {
         `    "Authorization": "Bearer ${apiKey}",`,
         `    "Content-Type": "application/json",`,
         `  },`,
-        `  body: JSON.stringify(${JSON.stringify({ data, format, ec, size: Number(size) }, null, 2).split("\n").join("\n  ")}),`,
+        `  body: JSON.stringify(${body.split("\n").join("\n  ")}),`,
         `});`,
         ``,
         `if (!res.ok) throw new Error(await res.text());`,
@@ -132,7 +141,7 @@ export function ApiDocsClient() {
       `res = requests.post(`,
       `    "${displayOrigin}/api/qr",`,
       `    headers={"Authorization": "Bearer ${apiKey}"},`,
-      `    json=${JSON.stringify({ data, format, ec, size: Number(size) })},`,
+      `    json=${JSON.stringify(payload)},`,
       `)`,
       `res.raise_for_status()`,
       `open("qr.${format === "svg" ? "svg" : "png"}", "wb").write(res.content)`,
@@ -159,7 +168,7 @@ export function ApiDocsClient() {
           "Authorization": `Bearer ${apiKey.trim()}`,
           "content-type": "application/json",
         },
-        body: JSON.stringify({ data, format, ec, size: Number(size) }),
+        body: JSON.stringify(payload),
       });
       const elapsed = Math.round(performance.now() - started);
       const contentType = res.headers.get("content-type") ?? "";
@@ -399,6 +408,64 @@ export function ApiDocsClient() {
               </Field>
             ) : null}
 
+            <div className="grid grid-cols-2 gap-3">
+              <Field
+                label="Margin"
+                hint="0–16"
+                htmlFor="pg-margin"
+                className={format === "png" ? undefined : "col-span-2"}
+              >
+                <TextInput
+                  id="pg-margin"
+                  type="number"
+                  min={0}
+                  max={16}
+                  value={margin}
+                  onChange={(event) => setMargin(event.target.value)}
+                  className="text-xs py-2"
+                />
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Dark">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={dark}
+                    onChange={(event) => setDark(event.target.value.toUpperCase())}
+                    aria-label="Dark color picker"
+                    className="w-8 h-8 shrink-0 rounded cursor-pointer border border-slate-200 bg-white p-0.5"
+                  />
+                  <TextInput
+                    value={dark}
+                    onChange={(event) => setDark(event.target.value)}
+                    mono
+                    aria-label="Dark hex value"
+                    className="text-xs py-2"
+                  />
+                </div>
+              </Field>
+              <Field label="Light">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={light}
+                    onChange={(event) => setLight(event.target.value.toUpperCase())}
+                    aria-label="Light color picker"
+                    className="w-8 h-8 shrink-0 rounded cursor-pointer border border-slate-200 bg-white p-0.5"
+                  />
+                  <TextInput
+                    value={light}
+                    onChange={(event) => setLight(event.target.value)}
+                    mono
+                    aria-label="Light hex value"
+                    className="text-xs py-2"
+                  />
+                </div>
+              </Field>
+            </div>
+
             <Button variant="gradient" size="md" icon="play_arrow" disabled={busy || !data.trim()} onClick={() => void run()}>
               {busy ? "Sending…" : "Send request"}
             </Button>
@@ -443,6 +510,12 @@ export function ApiDocsClient() {
           </div>
         </Card>
       </div>
+
+      {/* Deep reference */}
+      <QrParameters />
+      <ErrorReference />
+      <DynamicApiSection origin={displayOrigin} />
+      <ResponsesAndLimits />
     </div>
   );
 }
